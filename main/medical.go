@@ -95,7 +95,6 @@ func main() {
 	chaincode, err := contractapi.NewChaincode(&MedicalChaincode{})
 	if err != nil {
 		fmt.Printf("创建医疗链码失败: %v", err)
-		return
 	}
 
 	if err := chaincode.Start(); err != nil {
