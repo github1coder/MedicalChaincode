@@ -5,27 +5,20 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
-	//"Medical/fabric/fabric-contract-api-go/contractapi"
 )
 
-// 医疗记录
-type MedicalRecord struct {
-	Patient   string `json:"patient"`
-	Doctor    string `json:"doctor"`
-	Diagnosis string `json:"diagnosis"`
-}
-
-// 链码入口点
-type MedicalChaincode struct {
-	contractapi.Contract
-}
 
 // 添加医疗记录
-func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextInterface, patient, doctor, diagnosis string) error {
+// 数据集里好像没有doctor，我先改成index了
+func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextInterface, patient, index, diagnosis string) error {
 	medicalRecord := MedicalRecord{
-		Patient:   patient,
-		Doctor:    doctor,
-		Diagnosis: diagnosis,
+		ID:            index,
+		SUBJECT_ID:    patient,
+		Note_Details:  diagnosis,
+		ICD9_CODE:     []string{},
+		PRO_CODE:      []int{},
+		Drug_Details:  make(map[string]string),
+		Input_Details: make(map[string]string),
 	}
 
 	medicalRecordJSON, err := json.Marshal(medicalRecord)
@@ -47,6 +40,8 @@ func (mc *MedicalChaincode) GetMedicalRecord(ctx contractapi.TransactionContextI
 	if err != nil {
 		return nil, fmt.Errorf("读取状态数据库失败: %v", err)
 	}
+	// TODO: 在不存在该键值记录时GetStub().GetState()会直接返回下面报错，不清楚为什么，不过目前影响不大
+	// Error: endorsement failure during query. response: status:500 message:"\344\270\215 ......
 	if medicalRecordJSON == nil {
 		return nil, fmt.Errorf("不存在该病人的医疗记录： %s", patient)
 	}
@@ -76,7 +71,7 @@ func (mc *MedicalChaincode) UpdateMedicalRecord(ctx contractapi.TransactionConte
 		return fmt.Errorf("获取医疗记录失败: %v", err)
 	}
 
-	existingRecord.Diagnosis = newDiagnosis
+	existingRecord.Note_Details = newDiagnosis
 
 	updatedRecordJSON, err := json.Marshal(existingRecord)
 	if err != nil {
@@ -88,16 +83,4 @@ func (mc *MedicalChaincode) UpdateMedicalRecord(ctx contractapi.TransactionConte
 	}
 
 	return nil
-}
-
-// 主函数
-func main() {
-	chaincode, err := contractapi.NewChaincode(&MedicalChaincode{})
-	if err != nil {
-		fmt.Printf("创建医疗链码失败: %v", err)
-	}
-
-	if err := chaincode.Start(); err != nil {
-		fmt.Printf("启动医疗链码失败: %v", err)
-	}
 }
