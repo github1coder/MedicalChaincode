@@ -13,7 +13,7 @@ import pandas
 # pandas.set_option('display.max_rows', 2)
 
 csv = pandas.read_csv('log.csv')
-# print(csv.to_string(line_width=200))
-print(csv.loc[0].to_string())
+print(csv.to_string())
+# print(csv.loc[0].to_string())
 # print(pandas.DataFrame())
 # print("Hello World")
