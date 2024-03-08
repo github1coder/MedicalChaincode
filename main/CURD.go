@@ -3,12 +3,13 @@ package main
 // 导入所需的包
 import (
 	"encoding/json"
+	"reflect"
+
 	// "encoding/csv"
 	"fmt"
-	"strings"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+	"strings"
 )
-
 
 // 添加医疗记录
 // 数据集里好像没有doctor，我先改成index了
@@ -54,12 +55,12 @@ import (
 // }
 
 // 对ICUSTAY_Details之后的信息目前还是单独作为参数，目前没找到比较好的办法，peer invoke的json格式不允许""里面套复杂的字符
-// func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextInterface, byteRecord string, 
+// func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextInterface, byteRecord string,
 // 	ICUSTAY_Details string, ICD9_CODE []string, PRO_CODE []int, Drug_Details string, Input_Details string, Note_Details string) ([]string,error) {
 
 // 	medicalStream := strings.Split(byteRecord, ",")
 // 	medicalRecord := MedicalRecord{
-// 		ID:            
+// 		ID:
 // 		SUBJECT_ID:         string       `json:"患者ID"`  // 249
 // 		GENDER:             string       `json:"性别"`    // F
 // 		DOB:                time.Time    `json:"患者出生日期"`           // 2075-03-13 00:00:00
@@ -98,7 +99,7 @@ import (
 // 	return medicalStream ,nil
 // }
 
-func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextInterface, byteRecord string) (*MedicalRecord,error) {
+func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextInterface, byteRecord string) (*MedicalRecord, error) {
 	var medStrings []string
 	quoteOpen := false
 	var str strings.Builder
@@ -118,15 +119,15 @@ func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextI
 	}
 	medStrings = append(medStrings, str.String())
 	// medicalRecord := MedicalRecord {
-	// 		// index: 								medStrings[0],  
-	// 		// SUBJECT_ID: 					medStrings[1], 
+	// 		// index: 								medStrings[0],
+	// 		// SUBJECT_ID: 					medStrings[1],
 	// 	}
 
-	medicalRecord := MedicalRecord {
-		index: 								medStrings[0],                
-		SUBJECT_ID: 					medStrings[1],    
-		GENDER: 							medStrings[2],               
-		DOB: 									medStrings[3],               
+	medicalRecord := MedicalRecord{
+		index:                medStrings[0],
+		SUBJECT_ID:           medStrings[1],
+		GENDER:               medStrings[2],
+		DOB:                  medStrings[3],
 		DOD:                  medStrings[4],
 		DOD_HOSP:             medStrings[5],
 		DOD_SSN:              medStrings[6],
@@ -195,6 +196,33 @@ func (mc *MedicalChaincode) DeleteMedicalRecord(ctx contractapi.TransactionConte
 	if err != nil {
 		return fmt.Errorf("删除医疗记录失败: %v", err)
 	}
+	return nil
+}
+
+// 更新医疗记录，根据传入的index、字段名和新值修改medicalRecord
+func (mc *MedicalChaincode) UpdateMedicalRecordByField(ctx contractapi.TransactionContextInterface, index string, field string, newValue string) error {
+	// 获取当前的医疗记录
+	medicalRecord, err := mc.GetMedicalRecord(ctx, index)
+	if err != nil {
+		return fmt.Errorf("获取医疗记录失败: %v", err)
+	}
+
+	// 使用反射来更新指定字段的值
+	rv := reflect.ValueOf(&medicalRecord).Elem()
+	rv.FieldByName(field).SetString(newValue)
+
+	// 转换回 JSON
+	updatedRecordJSON, err := json.Marshal(medicalRecord)
+	if err != nil {
+		return fmt.Errorf("转换json失败: %v", err)
+	}
+
+	// 存回链码状态
+	err = ctx.GetStub().PutState(index, updatedRecordJSON)
+	if err != nil {
+		return fmt.Errorf("存入状态数据库失败: %v", err)
+	}
+
 	return nil
 }
 
