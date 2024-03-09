@@ -47,3 +47,12 @@ type MedicalRecord struct {
 	Input_Details        string 							`json:"Input_Details"`        //  ICUSTAY_ID: 269035.0, STARTTIME: 2155-02-05 17...
 	Note_Details         string            		`json:"Note_Details"`         //  1495461495461495461495461495461495461495461495...
 }
+
+type TxnRecord struct {
+	index								 string								`json:"index"`
+	FUNCTION             string               `json:"function_invoked"`
+	PARAMETER            string               `json:"function_parameter_value"`
+	ClientMSPID          string               `json:"client_MSP_id"`  // 发布事务的节点客户端的MSPID
+	TIME                 string               `json:"time"`
+	SUCCESS              string               `json:"submiting_commit_abort"`
+}
