@@ -9,95 +9,8 @@ import (
 	"fmt"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 	"strings"
+	"time"
 )
-
-// 添加医疗记录
-// 数据集里好像没有doctor，我先改成index了
-// func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextInterface, patient, index, diagnosis string) error {
-// 	medicalRecord := MedicalRecord{
-// 		ID:            index,
-// 		SUBJECT_ID:    patient,
-// 		Note_Details:  diagnosis,
-// 		ICD9_CODE:     []string{},
-// 		PRO_CODE:      []int{},
-// 		Drug_Details:  make(map[string]string),
-// 		Input_Details: make(map[string]string),
-// 	}
-
-// 	medicalRecordJSON, err := json.Marshal(medicalRecord)
-// 	if err != nil {
-// 		return fmt.Errorf("转换json失败: %v", err)
-// 	}
-
-// 	err = ctx.GetStub().PutState(patient, medicalRecordJSON)
-// 	if err != nil {
-// 		return fmt.Errorf("存入状态数据库失败: %v", err)
-// 	}
-
-// 	return nil
-// }
-
-// // 添加医疗记录
-// func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextInterface, medicalRecordJSON string) error {
-// 	var medicalRecord MedicalRecord
-
-// 	err := json.Unmarshal([]byte(medicalRecordJSON), &medicalRecord)
-// 	if err != nil {
-// 		return fmt.Errorf("解析医疗记录json失败: %v", err)
-// 	}
-
-// 	err = ctx.GetStub().PutState(medicalRecord.ID, []byte(medicalRecordJSON))
-// 	if err != nil {
-// 		return fmt.Errorf("存入状态数据库失败: %v", err)
-// 	}
-
-// 	return nil
-// }
-
-// 对ICUSTAY_Details之后的信息目前还是单独作为参数，目前没找到比较好的办法，peer invoke的json格式不允许""里面套复杂的字符
-// func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextInterface, byteRecord string,
-// 	ICUSTAY_Details string, ICD9_CODE []string, PRO_CODE []int, Drug_Details string, Input_Details string, Note_Details string) ([]string,error) {
-
-// 	medicalStream := strings.Split(byteRecord, ",")
-// 	medicalRecord := MedicalRecord{
-// 		ID:
-// 		SUBJECT_ID:         string       `json:"患者ID"`  // 249
-// 		GENDER:             string       `json:"性别"`    // F
-// 		DOB:                time.Time    `json:"患者出生日期"`           // 2075-03-13 00:00:00
-// 		DOD:                string       `json:"患者死亡日期"`           // NaN
-// 		DOD_HOSP:           string       `json:"患者在医院中死亡的日期"`           // NaN
-// 		DOD_SSN:            string                  // NaN
-// 		EXPIRE_FLAG:        bool         `json:"是否过期"`  // 0
-// 		HADM_ID:            string       `json:"住院ID"`   // 患者住院期间的唯一标识； 若为门诊患者则字段为空 149546
-// 		ADMITTIME:          time.Time    `json:"患者入院的时间"`                // 2155-02-03 20:16:00
-// 		DISCHTIME:          time.Time    `json:"患者出院的时间"`                // 2155-02-14 11:15:00
-// 		DEATHTIME:          time.Time    `json:"患者死亡的具体时间`                 // NaN
-// 		ADMISSION_TYPE:     string                        // EMERGENCY
-// 		ADMISSION_LOCATION: string                        // EMERGENCY ROOM ADMIT
-// 		DISCHARGE_LOCATION: string                        // REHAB/DISTINCT PART HOSP
-// 		INSURANCE:          string                        // Medicare
-// 		LANGUAGE:           string                        // ENGL
-// 		RELIGION:           string                        // CATHOLIC
-// 		MARITAL_STATUS:     string                        // DIVORCED
-// 		ETHNICITY:          string                        // WHITE
-// 		EDREGTIME:          time.Time     `json:"在急诊科登记的时间"`                // 2155-02-03 17:43:00
-// 		EDOUTTIME:          time.Time     `json:"从急诊科出院的时间"`                // 2155-02-03 21:26:00
-// 		DIAGNOSIS:          string                        // GI BLEED/ CHEST PAIN
-// 		HOSPITAL_EXPIRE_FLAG:   bool                      // 0
-// 		HAS_CHARTEVENTS_DATA   bool                      // 1
-
-// 		ICUSTAY_Details    string   // ICUSTAY_ID: 269035, FIRST_CAREUNIT: MICU, LAST...
-// 		ICD9_CODE          []string // 包含了这个患者这次住院所有的症状代码（和其他对应信息） //ICD-9是一套编码系统，用于标识各种疾病、疾病症状、损伤和其他健康相关情况 // ['56985', '41071', '43411', '5849', '2851', '3...
-// 		PRO_CODE           []int    // [3974, 40, 8841, 9910]
-// 		// Drug_Details       map[string]string   //  ICUSTAY_ID: 208413, DRUG: 0.9% Sodium Chloride...
-// 		// Input_Details      map[string]string   //  ICUSTAY_ID: 269035.0, STARTTIME: 2155-02-05 17...
-// 		Drug_Details       string   //  ICUSTAY_ID: 208413, DRUG: 0.9% Sodium Chloride...
-// 		Input_Details      string   //  ICUSTAY_ID: 269035.0, STARTTIME: 2155-02-05 17...
-// 		Note_Details       string
-// 	}
-
-// 	return medicalStream ,nil
-// }
 
 func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextInterface, byteRecord string) (*MedicalRecord, error) {
 	var medStrings []string
@@ -157,6 +70,17 @@ func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextI
 		Note_Details:         medStrings[30],
 	}
 
+	// 提交事务 
+	hospitalMSPID, err := ctx.GetClientIdentity().GetMSPID()
+	if err != nil {
+		return nil, fmt.Errorf("获取MSPID失败: %v", err)
+	}
+	currentTime := time.Now()
+	// _, err = mc.SubmitTransaction(ctx, hospitalMSPID+" "+currentTime.Format("2006-01-02 15:04:05")+" add"+medicalRecord.index, hospitalMSPID, "AddMedicalRecord", medicalRecord.index, "submit")
+	// if err != nil {
+	// 	return nil, err
+	// }
+
 	RecordJSON, err := json.Marshal(medicalRecord)
 	if err != nil {
 		return nil, fmt.Errorf("转换json失败: %v", err)
@@ -166,11 +90,26 @@ func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextI
 		return nil, fmt.Errorf("存入状态数据库失败: %v", err)
 	}
 
+	_, err = mc.SubmitTransaction(ctx, hospitalMSPID+" "+currentTime.Format("2006-01-02 15:04:05")+" add"+medicalRecord.index, hospitalMSPID, "AddMedicalRecord", medicalRecord.index, "commit")
+	if err != nil {
+		return nil, err
+	}
 	return &medicalRecord, nil
 }
 
 // 获取医疗记录
 func (mc *MedicalChaincode) GetMedicalRecord(ctx contractapi.TransactionContextInterface, index string) (*MedicalRecord, error) {
+	// 提交事务 
+	hospitalMSPID, err := ctx.GetClientIdentity().GetMSPID()
+	if err != nil {
+		return nil, fmt.Errorf("获取MSPID失败: %v", err)
+	}
+	currentTime := time.Now()
+	// _, err = mc.SubmitTransaction(ctx, hospitalMSPID+" "+currentTime.Format("2006-01-02 15:04:05")+" get"+index, hospitalMSPID, "GetMedicalRecord", index, "submit")
+	// if err != nil {
+	// 	return nil, err
+	// }
+
 	medicalRecordJSON, err := ctx.GetStub().GetState(index)
 	if err != nil {
 		return nil, fmt.Errorf("读取状态数据库失败: %v", err)
@@ -187,20 +126,51 @@ func (mc *MedicalChaincode) GetMedicalRecord(ctx contractapi.TransactionContextI
 		return nil, fmt.Errorf("解析医疗记录json失败: %v", err)
 	}
 
+	_, err = mc.SubmitTransaction(ctx, hospitalMSPID+" "+currentTime.Format("2006-01-02 15:04:05")+" get"+index, hospitalMSPID, "GetMedicalRecord", index, "commit")
+	if err != nil {
+		return nil, err
+	}
 	return &medicalRecord, nil
 }
 
 // 删除医疗记录
 func (mc *MedicalChaincode) DeleteMedicalRecord(ctx contractapi.TransactionContextInterface, index string) error {
-	err := ctx.GetStub().DelState(index)
+	// 提交事务 
+	hospitalMSPID, err := ctx.GetClientIdentity().GetMSPID()
+	if err != nil {
+		return fmt.Errorf("获取MSPID失败: %v", err)
+	}
+	currentTime := time.Now()
+	// _, err = mc.SubmitTransaction(ctx, hospitalMSPID+" "+currentTime.Format("2006-01-02 15:04:05")+" delete"+index, hospitalMSPID, "GetMedicalRecord", index, "submit")
+	// if err != nil {
+	// 	return err
+	// }
+
+	err = ctx.GetStub().DelState(index)
 	if err != nil {
 		return fmt.Errorf("删除医疗记录失败: %v", err)
+	}
+
+	_, err = mc.SubmitTransaction(ctx, hospitalMSPID+" "+currentTime.Format("2006-01-02 15:04:05")+" delete"+index, hospitalMSPID, "GetMedicalRecord", index, "commit")
+	if err != nil {
+		return err
 	}
 	return nil
 }
 
 // 更新医疗记录，根据传入的index、字段名和新值修改medicalRecord
 func (mc *MedicalChaincode) UpdateMedicalRecordByField(ctx contractapi.TransactionContextInterface, index string, field string, newValue string) error {
+	// 提交事务 
+	hospitalMSPID, err := ctx.GetClientIdentity().GetMSPID()
+	if err != nil {
+		return fmt.Errorf("获取MSPID失败: %v", err)
+	}
+	currentTime := time.Now()
+	// _, err = mc.SubmitTransaction(ctx, hospitalMSPID+" "+currentTime.Format("2006-01-02 15:04:05")+" update"+index+field, hospitalMSPID, "UpdateMedicalRecordByField", index+" "+field+" "+newValue, "submit")
+	// if err != nil {
+	// 	return err
+	// }
+
 	// 获取当前的医疗记录
 	medicalRecord, err := mc.GetMedicalRecord(ctx, index)
 	if err != nil {
@@ -223,6 +193,10 @@ func (mc *MedicalChaincode) UpdateMedicalRecordByField(ctx contractapi.Transacti
 		return fmt.Errorf("存入状态数据库失败: %v", err)
 	}
 
+	_, err = mc.SubmitTransaction(ctx, hospitalMSPID+" "+currentTime.Format("2006-01-02 15:04:05")+" update"+index+field, hospitalMSPID, "UpdateMedicalRecordByField", index+" "+field+" "+newValue, "commit")
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
