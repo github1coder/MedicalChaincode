@@ -70,7 +70,7 @@ func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextI
 		Note_Details:         medStrings[30],
 	}
 
-	// 提交事务 
+	// 提交事务
 	hospitalMSPID, err := ctx.GetClientIdentity().GetMSPID()
 	if err != nil {
 		return nil, fmt.Errorf("获取MSPID失败: %v", err)
@@ -99,7 +99,7 @@ func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextI
 
 // 获取医疗记录
 func (mc *MedicalChaincode) GetMedicalRecord(ctx contractapi.TransactionContextInterface, index string) (*MedicalRecord, error) {
-	// 提交事务 
+	// 提交事务
 	hospitalMSPID, err := ctx.GetClientIdentity().GetMSPID()
 	if err != nil {
 		return nil, fmt.Errorf("获取MSPID失败: %v", err)
@@ -135,7 +135,7 @@ func (mc *MedicalChaincode) GetMedicalRecord(ctx contractapi.TransactionContextI
 
 // 删除医疗记录
 func (mc *MedicalChaincode) DeleteMedicalRecord(ctx contractapi.TransactionContextInterface, index string) error {
-	// 提交事务 
+	// 提交事务
 	hospitalMSPID, err := ctx.GetClientIdentity().GetMSPID()
 	if err != nil {
 		return fmt.Errorf("获取MSPID失败: %v", err)
@@ -160,7 +160,7 @@ func (mc *MedicalChaincode) DeleteMedicalRecord(ctx contractapi.TransactionConte
 
 // 更新医疗记录，根据传入的index、字段名和新值修改medicalRecord
 func (mc *MedicalChaincode) UpdateMedicalRecordByField(ctx contractapi.TransactionContextInterface, index string, field string, newValue string) error {
-	// 提交事务 
+	// 提交事务
 	hospitalMSPID, err := ctx.GetClientIdentity().GetMSPID()
 	if err != nil {
 		return fmt.Errorf("获取MSPID失败: %v", err)
