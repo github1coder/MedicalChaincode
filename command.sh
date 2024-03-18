@@ -35,22 +35,22 @@ sed -i '1d' medical.csv
 # 删去空行
 sed -i '/^\s*$/d' medical.csv
 # 工作目录切换到测试网络目录，同时将处理好的数据也移过去
-touch ../test-network/info.csv
-cp medical.csv  $testnetwork/info.csv
-cd $testnetwork
+#touch ../test-network/info.csv
+#cp medical.csv  $testnetwork/info.csv
+#cd $testnetwork
 # 清空invoke.sh
 echo > invoke.sh
 # 将所有invoke命令都写到invoke.sh脚本里
 while read line
 do
     line=${line//$'\r'}
-    echo "peer chaincode invoke -o localhost:7050 --waitForEvent --ordererTLSHostnameOverride orderer.example.com --tls --cafile "${PWD}/organizations/ordererOrganizations/example.com/orderers/orderer.example.com/msp/tlscacerts/tlsca.example.com-cert.pem" -C mychannel -n Hao --peerAddresses localhost:7051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org1.example.com/peers/peer0.org1.example.com/tls/ca.crt" --peerAddresses localhost:9051 --tlsRootCertFiles "${PWD}/organizations/peerOrganizations/org2.example.com/peers/peer0.org2.example.com/tls/ca.crt" -c '{\"function\":\"AddMedicalRecord\",\"Args\":[\"$line\"]}'" >> invoke.sh
+    echo $line >> invoke.sh
     echo "sleep 1" >> invoke.sh
-done < info.csv
-# 执行invoke.sh脚本，添加MIMICⅢ数据集到联盟链中
-source invoke.sh
-# 回到最开始的目录
-cd $MedPATH
+done < medical.csv
+## 执行invoke.sh脚本，添加MIMICⅢ数据集到联盟链中
+#source invoke.sh
+## 回到最开始的目录
+#cd $MedPATH
 
 
 # 第10条记录太长了，超出脚本对参数列表的限制。

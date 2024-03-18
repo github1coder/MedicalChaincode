@@ -178,7 +178,7 @@ func (mc *MedicalChaincode) UpdateMedicalRecordByField(ctx contractapi.Transacti
 	}
 
 	// 使用反射来更新指定字段的值
-	rv := reflect.ValueOf(&medicalRecord).Elem()
+	rv := reflect.ValueOf(medicalRecord).Elem()
 	rv.FieldByName(field).SetString(newValue)
 
 	// 转换回 JSON
