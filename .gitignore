@@ -58,12 +58,11 @@ fabric.properties
 .idea
 # End of https://www.toptal.com/developers/gitignore/api/goland,go,git
 
-vendor
+MedicalChaincode/vendor
+MedicalChaincode/command.sh
+MedicalChaincode/config.sh
+MedicalChaincode/data.py
+MedicalChaincode/invoke.sh
+MedicalChaincode/log.csv
+MedicalChaincode/medical.csv
 
-organizations
-
-invoke.sh
-
-command.sh
-
-medical.csv
