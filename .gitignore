@@ -58,8 +58,5 @@ fabric.properties
 .idea
 # End of https://www.toptal.com/developers/gitignore/api/goland,go,git
 
-MedicalChaincode/vendor
-
-
-__pycache__
+__pycache__/
 
