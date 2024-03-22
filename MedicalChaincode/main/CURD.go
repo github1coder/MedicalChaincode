@@ -9,18 +9,12 @@ import (
 	"fmt"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 	// "strings"
-	"time"
+	// "time"
 )
 
 func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextInterface, Index string, RecordJSON string) (*MedicalRecord, error) {
-	hospitalMSPID, err := ctx.GetClientIdentity().GetMSPID()
-	if err != nil {
-		return nil, fmt.Errorf("获取MSPID失败: %v", err)
-	}
-	currentTime := time.Now()
-
 	medicalRecordJSON := []byte(RecordJSON)
-	err = ctx.GetStub().PutState(Index, medicalRecordJSON)
+	err := ctx.GetStub().PutState(Index, medicalRecordJSON)
 	if err != nil {
 		return nil, fmt.Errorf("存入状态数据库失败: %v", err)
 	}
@@ -30,21 +24,11 @@ func (mc *MedicalChaincode) AddMedicalRecord(ctx contractapi.TransactionContextI
 		return nil, fmt.Errorf("解析医疗记录json失败: %v", err)
 	}
 
-	_, err = mc.SubmitTransaction(ctx, hospitalMSPID+" "+currentTime.Format("2006-01-02 15:04:05")+" add"+Index, hospitalMSPID, "AddMedicalRecord", Index, "commit")
-	if err != nil {
-		return nil, err
-	}
 	return &medicalRecord, nil
 }
 
 // 获取医疗记录
 func (mc *MedicalChaincode) GetMedicalRecord(ctx contractapi.TransactionContextInterface, index string) (*MedicalRecord, error) {
-	hospitalMSPID, err := ctx.GetClientIdentity().GetMSPID()
-	if err != nil {
-		return nil, fmt.Errorf("获取MSPID失败: %v", err)
-	}
-	currentTime := time.Now()
-
 	medicalRecordJSON, err := ctx.GetStub().GetState(index)
 	if err != nil {
 		return nil, fmt.Errorf("读取状态数据库失败: %v", err)
@@ -61,41 +45,21 @@ func (mc *MedicalChaincode) GetMedicalRecord(ctx contractapi.TransactionContextI
 		return nil, fmt.Errorf("解析医疗记录json失败: %v", err)
 	}
 
-	_, err = mc.SubmitTransaction(ctx, hospitalMSPID+" "+currentTime.Format("2006-01-02 15:04:05")+" get"+index, hospitalMSPID, "GetMedicalRecord", index, "commit")
-	if err != nil {
-		return nil, err
-	}
 	return &medicalRecord, nil
 }
 
 // 删除医疗记录
 func (mc *MedicalChaincode) DeleteMedicalRecord(ctx contractapi.TransactionContextInterface, index string) error {
-	hospitalMSPID, err := ctx.GetClientIdentity().GetMSPID()
-	if err != nil {
-		return fmt.Errorf("获取MSPID失败: %v", err)
-	}
-	currentTime := time.Now()
-
-	err = ctx.GetStub().DelState(index)
+	err := ctx.GetStub().DelState(index)
 	if err != nil {
 		return fmt.Errorf("删除医疗记录失败: %v", err)
 	}
 
-	_, err = mc.SubmitTransaction(ctx, hospitalMSPID+" "+currentTime.Format("2006-01-02 15:04:05")+" delete"+index, hospitalMSPID, "GetMedicalRecord", index, "commit")
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
 // 更新医疗记录，根据传入的index、字段名和新值修改medicalRecord
 func (mc *MedicalChaincode) UpdateMedicalRecordByField(ctx contractapi.TransactionContextInterface, index string, field string, newValue string) error {
-	hospitalMSPID, err := ctx.GetClientIdentity().GetMSPID()
-	if err != nil {
-		return fmt.Errorf("获取MSPID失败: %v", err)
-	}
-	currentTime := time.Now()
-
 	// 获取当前的医疗记录
 	medicalRecord, err := mc.GetMedicalRecord(ctx, index)
 	if err != nil {
@@ -118,10 +82,6 @@ func (mc *MedicalChaincode) UpdateMedicalRecordByField(ctx contractapi.Transacti
 		return fmt.Errorf("存入状态数据库失败: %v", err)
 	}
 
-	_, err = mc.SubmitTransaction(ctx, hospitalMSPID+" "+currentTime.Format("2006-01-02 15:04:05")+" update"+index+field, hospitalMSPID, "UpdateMedicalRecordByField", index+" "+field+" "+newValue, "commit")
-	if err != nil {
-		return err
-	}
 	return nil
 }
 
