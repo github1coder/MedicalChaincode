@@ -12,7 +12,7 @@ func AddMedicalRecord(byteRecord string) {
 	index, medicalJSON := MarshalCSV(byteRecord)
 	contract.SubmitTransaction("AddMedicalRecord", index, string(medicalJSON))
 	UploadLocalFileSystem(index, string(medicalJSON))
-	UploadCloudSystem(index, string(medicalJSON))
+	// UploadCloudSystem(index, string(medicalJSON))
 	SubmitTransaction(string(hospitalMSPID), "add", index, "commit")
 	fmt.Printf("add successfully, record: %v\n", index)
 }

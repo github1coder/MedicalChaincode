@@ -159,8 +159,9 @@ filename := "MedicalRecord" + "_ID:" + index
 pwd, _ := os.Getwd()
 filepath := pwd + "/cloud"
 /** 设置阿里云OSS访问密钥 */
-accessKeyId := "LTAI5t5trSAxMSRUDwP3t9uy"  
-accessKeySecret := "8GaeoaqtGPqY9Z0Epjr28br8QjVgQr"  
+// 密钥隐藏，需要时私下给
+accessKeyId := "" 
+accessKeySecret := ""
 endpoint := "oss-cn-beijing.aliyuncs.com"  
 bucketName := "sspku"  
 objectName := filename // "hao" // OSS中的对象名称，通常是文件的路径和名称  
