@@ -21,7 +21,7 @@ func (mc *MedicalChaincode) SubmitTransaction(ctx contractapi.TransactionContext
 
 	currentTime := time.Now()
 	txnRecord := TxnRecord{
-		index:       index,
+		Index:       index,
 		FUNCTION:    funcType,
 		PARAMETER:   paraVal,
 		ClientMSPID: clientMSPID,
@@ -37,7 +37,7 @@ func (mc *MedicalChaincode) SubmitTransaction(ctx contractapi.TransactionContext
 	if err != nil {
 		return nil, fmt.Errorf("转换json失败: %v", err)
 	}
-	err = ctx.GetStub().PutState("txn"+txnRecord.index, RecordJSON)
+	err = ctx.GetStub().PutState("txn"+txnRecord.Index, RecordJSON)
 	if err != nil {
 		return nil, fmt.Errorf("存入状态数据库失败: %v", err)
 	}

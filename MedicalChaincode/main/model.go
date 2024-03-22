@@ -12,7 +12,7 @@ package main
 // 结构体各个成员的涵义、类型都有待商榷，没有仔细看过数据
 // 第一列我没加进来，列名为空不知道什么涵义
 type MedicalRecord struct {
-	index                string `json:"index"`                // 0
+	Index                string `json:"index"`                // 0
 	SUBJECT_ID           string `json:"SUBJECT_ID"`           //249
 	GENDER               string `json:"GENDER"`               // F
 	DOB                  string `json:"DOB"`                  // 2075-03-13 00:00:00
@@ -46,7 +46,7 @@ type MedicalRecord struct {
 }
 
 type TxnRecord struct {
-	index       string `json:"index"`
+	Index       string `json:"index"`
 	FUNCTION    string `json:"function_invoked"`
 	PARAMETER   string `json:"function_parameter_value"`
 	ClientMSPID string `json:"client_MSP_id"` // 发布事务的节点客户端的MSPID
