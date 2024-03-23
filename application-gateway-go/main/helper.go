@@ -254,10 +254,11 @@ func DownloadCloudSystem(index string) error {
 	filename := "MedicalRecord" + "_ID:" + index
 	pwd, _ := os.Getwd()
 	filepath := pwd + "/cloud"
+	localFilename := filepath + "/" +filename 
 	/** 确保filename文件存在 */
-	file, err := os.Open(filename)  
+	file, err := os.Open(localFilename)  
 	if err != nil {  
-		file, err := os.Create(filename)  
+		file, err := os.Create(localFilename)  
 		if err != nil {  
 			panic(fmt.Errorf("[BACKEND SERVICE] 创建文件时出错: %w", err))  
 		}  
@@ -266,7 +267,6 @@ func DownloadCloudSystem(index string) error {
 	defer file.Close() 
 	/** 设置阿里云OSS访问对象 */
 	objectName := filename // "hao" // OSS中的对象名称，通常是文件的路径和名称  
-	localFilename := filepath + "/" +filename 
 	/** 初始化OSS客户端 */ 
 	client, err := oss.New(endpoint, accessKeyId, accessKeySecret)  
 	if err != nil {  

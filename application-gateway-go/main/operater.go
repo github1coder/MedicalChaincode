@@ -66,7 +66,7 @@ func GetMedicalRecord(index string) {
 			SubmitTransaction(string(hospitalMSPID), "get(private)", index, "abort")
 			panic(fmt.Errorf("[BACKEND SERVICE] failed to GetMedicalRecord: %w, orgCollection:%v", err, digestRecord.ADDRESS))
 		}
-		UploadLocalFileSystem("private"+index, string(medicalJSON))
+		UploadLocalFileSystem("private "+string(hospitalMSPID)+index, string(medicalJSON))
 		SubmitTransaction(string(hospitalMSPID), "get(private)", index, "commit")
 		fmt.Printf("private record: %v loaded, orgCollection:%v\n", digestRecord.Index, digestRecord.ADDRESS)
 	} else {

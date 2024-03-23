@@ -15,10 +15,10 @@ var bucketName = "sspku"
 
 func test() {
 	GetHospitalMSPID()
-	AddMedicalRecord(input_string_0)
-	GetMedicalRecord("0")
-	AddPrivateMedicalRecord(input_string_0, hospitalMSPID+"PrivateMedicalCollection")
-	GetMedicalRecord("0")
+	// AddMedicalRecord(input_string_0)
+	// GetMedicalRecord("0")
+	// AddPrivateMedicalRecord(input_string_0, hospitalMSPID+"PrivateMedicalCollection")
+	// GetMedicalRecord("0")
 	AddMedicalRecord(input_string_1)
 	GetMedicalRecord("1")
 	DeleteMedicalRecord("0")
