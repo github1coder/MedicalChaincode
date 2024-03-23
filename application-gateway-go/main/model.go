@@ -4,9 +4,20 @@ package main
     尝试import，但禁止导入带main的可执行包，且涉及一些路径设置
 		为了方便多人协作，直接多写一个model.go文件，注意及时更新保持一致 */
 
+/** 数据摘要 */
+type Digest struct {
+	Index                string `json:"index"`               			 // 0
+	SUBJECT_ID           string `json:"SUBJECT_ID"`          			 // 249
+	GENDER               string `json:"GENDER"`              			 // F
+	DOB                  string `json:"DOB"`                 			 // 2075-03-13 00:00:00
+	PRIVATE              string `json:"Public_Or_Private"`   		 	 // public意味着数据存在于云中，private意味着存在于某个私有数据集中
+	ADDRESS              string `json:"URL_Or_PrivateCollection"`  // 在云中的URL地址，或是私有数据集合名
+}
+
+/** 完整数据结构体 */
 type MedicalRecord struct {
 	Index                string `json:"index"`                // 0
-	SUBJECT_ID           string `json:"SUBJECT_ID"`           //249
+	SUBJECT_ID           string `json:"SUBJECT_ID"`           // 249
 	GENDER               string `json:"GENDER"`               // F
 	DOB                  string `json:"DOB"`                  // 2075-03-13 00:00:00
 	DOD                  string `json:"DOD"`                  // NaN
@@ -38,11 +49,11 @@ type MedicalRecord struct {
 	Note_Details         string `json:"Note_Details"`         //  1495461495461495461495461495461495461495461495...
 }
 
-type TxnRecord struct {
-	Index       string `json:"index"`
-	FUNCTION    string `json:"function_invoked"`
-	PARAMETER   string `json:"function_parameter_value"`
-	ClientMSPID string `json:"client_MSP_id"` // 发布事务的节点客户端的MSPID
-	TIME        string `json:"time"`
-	SUCCESS     string `json:"submiting_commit_abort"`
-}
+// type TxnRecord struct {
+// 	Index       string `json:"index"`
+// 	FUNCTION    string `json:"function_invoked"`
+// 	PARAMETER   string `json:"function_parameter_value"`
+// 	ClientMSPID string `json:"client_MSP_id"` // 发布事务的节点客户端的MSPID
+// 	TIME        string `json:"time"`
+// 	SUCCESS     string `json:"submiting_commit_abort"`
+// }

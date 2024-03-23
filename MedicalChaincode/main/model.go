@@ -2,18 +2,23 @@ package main
 
 // 导入所需的包
 
-// 医疗记录
-// type MedicalRecord struct {
-// 	Patient   string `json:"patient"`
-// 	Doctor    string `json:"doctor"`
-// 	Diagnosis string `json:"diagnosis"`
-// }
+/** 私有数据集中的公共部分，因为是公共可以不用直接上链应该，我这里先用了 */
+const Public = "PublicDigestCollection"
 
-// 结构体各个成员的涵义、类型都有待商榷，没有仔细看过数据
-// 第一列我没加进来，列名为空不知道什么涵义
+/** 数据摘要 */
+type Digest struct {
+	Index                string `json:"index"`               			 // 0
+	SUBJECT_ID           string `json:"SUBJECT_ID"`          			 // 249
+	GENDER               string `json:"GENDER"`              			 // F
+	DOB                  string `json:"DOB"`                 			 // 2075-03-13 00:00:00
+	PRIVATE              string `json:"Public_Or_Private"`   		 	 // public意味着数据存在于云中，private意味着存在于某个私有数据集中
+	ADDRESS              string `json:"URL_Or_PrivateCollection"`  // 在云中的URL地址，或是私有数据集合名
+}
+
+/** 完整数据结构体 */
 type MedicalRecord struct {
 	Index                string `json:"index"`                // 0
-	SUBJECT_ID           string `json:"SUBJECT_ID"`           //249
+	SUBJECT_ID           string `json:"SUBJECT_ID"`           // 249
 	GENDER               string `json:"GENDER"`               // F
 	DOB                  string `json:"DOB"`                  // 2075-03-13 00:00:00
 	DOD                  string `json:"DOD"`                  // NaN
@@ -45,11 +50,11 @@ type MedicalRecord struct {
 	Note_Details         string `json:"Note_Details"`         //  1495461495461495461495461495461495461495461495...
 }
 
-type TxnRecord struct {
-	Index       string `json:"index"`
-	FUNCTION    string `json:"function_invoked"`
-	PARAMETER   string `json:"function_parameter_value"`
-	ClientMSPID string `json:"client_MSP_id"` // 发布事务的节点客户端的MSPID
-	TIME        string `json:"time"`
-	SUCCESS     string `json:"submiting_commit_abort"`
-}
+// type TxnRecord struct {
+// 	Index       string `json:"index"`
+// 	FUNCTION    string `json:"function_invoked"`
+// 	PARAMETER   string `json:"function_parameter_value"`
+// 	ClientMSPID string `json:"client_MSP_id"` // 发布事务的节点客户端的MSPID
+// 	TIME        string `json:"time"`
+// 	SUCCESS     string `json:"submiting_commit_abort"`
+// }

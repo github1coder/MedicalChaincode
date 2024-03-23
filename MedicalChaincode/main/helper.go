@@ -7,6 +7,7 @@ import (
 	// "encoding/csv"
 	"fmt"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
+	"github.com/hyperledger/fabric-chaincode-go/shim"
 	// "time"
 )
 
@@ -16,6 +17,43 @@ func (mc *MedicalChaincode) GetHospitalMSPID(ctx contractapi.TransactionContextI
 		return "nil", fmt.Errorf("获取MSPID失败: %v", err)
 	}
 	return hospitalMSPID, nil
+}
+
+func (mc *MedicalChaincode) GetCollectionName(ctx contractapi.TransactionContextInterface) (string, error) {
+	/** Get the MSP ID of submitting client identity */
+	clientMSPID, err := mc.GetHospitalMSPID(ctx)
+	if err != nil {
+		return "", fmt.Errorf("%v", err)
+	}
+	/** Verify */
+	err = mc.VerifyClientOrgMatchesPeerOrg(ctx)
+	if err != nil {
+		return "", fmt.Errorf("%v", err)
+	}
+	/** Create the collection name */
+	orgCollection := clientMSPID + "PrivateMedicalCollection"
+	return orgCollection, nil
+}
+
+// 只有当前节点的客户端才能通过验证，因为节点存储着私有数据
+func (mc *MedicalChaincode) VerifyClientOrgMatchesPeerOrg(ctx contractapi.TransactionContextInterface) error {
+	clientMSPID, err := mc.GetHospitalMSPID(ctx)
+	if err != nil {
+		return fmt.Errorf("%v", err)
+	}
+	peerMSPID, err := shim.GetMSPID()
+	if err != nil {
+		return fmt.Errorf("failed getting the peer's MSPID: %v", err)
+	}
+
+	if clientMSPID != peerMSPID {
+		return fmt.Errorf("client from org %v is not authorized to read or write private data from an org %v peer", clientMSPID, peerMSPID)
+	}
+	return nil
+}
+
+func (mc *MedicalChaincode) KeyCombine(ctx contractapi.TransactionContextInterface, index string, collection string) string {
+	return collection + " ID:" + index
 }
 
 // // 提交事务
