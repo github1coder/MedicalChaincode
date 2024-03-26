@@ -43,7 +43,7 @@ func AddPrivateMedicalRecord(byteRecord string, addr string) {
 	fmt.Printf("add(private) successfully, record: %v\n", index)
 }
 
-// 读取数据<-摘要链&云 or 摘要链or私有数据集
+// 读取数据<-摘要链&云 or 摘要链&私有数据集
 func GetMedicalRecord(index string) {
 	/** 读取摘要链 */
 	var digestRecord Digest
@@ -66,7 +66,7 @@ func GetMedicalRecord(index string) {
 			SubmitTransaction(string(hospitalMSPID), "get(private)", index, "abort")
 			panic(fmt.Errorf("[BACKEND SERVICE] failed to GetMedicalRecord: %w, orgCollection:%v", err, digestRecord.ADDRESS))
 		}
-		UploadLocalFileSystem("private "+string(hospitalMSPID)+index, string(medicalJSON))
+		UploadLocalFileSystem("(private "+string(hospitalMSPID)+")"+index, string(medicalJSON))
 		SubmitTransaction(string(hospitalMSPID), "get(private)", index, "commit")
 		fmt.Printf("private record: %v loaded, orgCollection:%v\n", digestRecord.Index, digestRecord.ADDRESS)
 	} else {
@@ -77,7 +77,7 @@ func GetMedicalRecord(index string) {
 	}
 }
 
-
+// 删除数据 x (摘要链&云 or 摘要链&私有数据集)
 func DeleteMedicalRecord(index string) {
 	/** 读取摘要链 */
 	var digestRecord Digest

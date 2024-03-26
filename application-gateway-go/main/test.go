@@ -5,7 +5,6 @@ import (
 )
 
 var hospitalMSPID string
-// hao's 阿里云密钥，隐藏，需要时私下给，或者用自己的就好
 // var accessKeyId = "" 
 // var accessKeySecret = ""
 var accessKeyId = "LTAI5t5trSAxMSRUDwP3t9uy"  
@@ -15,10 +14,11 @@ var bucketName = "sspku"
 
 func test() {
 	GetHospitalMSPID()
-	// AddMedicalRecord(input_string_0)
-	// GetMedicalRecord("0")
-	// AddPrivateMedicalRecord(input_string_0, hospitalMSPID+"PrivateMedicalCollection")
-	// GetMedicalRecord("0")
+	
+	AddMedicalRecord(input_string_0)
+	GetMedicalRecord("0")
+	AddPrivateMedicalRecord(input_string_0, hospitalMSPID+"PrivateMedicalCollection")
+	GetMedicalRecord("0")
 	AddMedicalRecord(input_string_1)
 	GetMedicalRecord("1")
 	DeleteMedicalRecord("0")
