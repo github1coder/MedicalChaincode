@@ -5,10 +5,9 @@ import (
 )
 
 var hospitalMSPID string
+// AK已删除
 // var accessKeyId = "" 
-// var accessKeySecret = ""
-var accessKeyId = "LTAI5t5trSAxMSRUDwP3t9uy"  
-var accessKeySecret = "8GaeoaqtGPqY9Z0Epjr28br8QjVgQr"  
+// var accessKeySecret = "" 
 var endpoint = "oss-cn-beijing.aliyuncs.com"  
 var bucketName = "sspku"
 
